@@ -1,0 +1,6 @@
+[book]
+title = "Rustで簡易ウェブクローラを作る"
+authors = ["Shotaro Tsuji"]
+language = "ja"
+multilingual = false
+src = "src"
