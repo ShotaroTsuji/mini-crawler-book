@@ -93,21 +93,18 @@ pub fn attr(&self, name: &str) -> Option<&'a str>
 
 ## リンクを絶対URLに変換する
 
-ここまでの作業でHTML文書からリンクを抽出することができました。
-しかし、抽出したリンクを`reqwest::blocking::get`に渡すことはできません。
-なぜなら同じサイト内にあるページへのリンクは相対URLとして記述されているので、これを絶対URLに変換する必要があります。
+ここまでの作業でHTML文書からリンクを抽出することができました。しかし、抽出したリンクを`reqwest::blocking::get`に渡すことはできません。上の結果を見ても分かる通り、同じサイト内にあるページへのリンクは相対URLとして記述されているので、これを絶対URLに変換する必要があります。
 
-今回はURLの扱いを簡単に行うために[`url`クレート](https://crates.io/crates/url)を使います。
-[`url`クレートのドキュメント](https://docs.rs/url/2.2.0/url/)を読むと、`Url::parse`メソッドを使うとURLのパースができるようなので、ひとまず抽出したリンクをパースして表示するコードを書いてみます。
+今回はURLの扱いを簡単に行うために[`url`](https://crates.io/crates/url)クレートを使います。
+[`url`クレートのドキュメント](https://docs.rs/url/2.2.0/url/)を読むと、`Url::parse`関連関数を使うとURLのパースができるようなので、ひとまず抽出したリンクをパースして表示するコードを書いてみます。
 
-```rust
+```rust:src/main.rs
     for href in doc.find(Name("a")).filter_map(|a| a.attr("href")) {
         println!("{:?}", Url::parse(href));
     }
 ```
 
-`src/main.rs`の`for`文を上のように書き換えて実行すると次のような出力が得られるはずです。
-絶対URLになっているものはパースが成功して、相対URLになっているものは[`ParseError::RelativeUrlWithoutBase`](https://docs.rs/url/2.2.0/url/enum.ParseError.html)が返ってきます。
+`src/main.rs`の`for`文を上のように書き換えて実行すると次のような出力が得られるはずです。絶対URLになっているものはパースが成功して、相対URLになっているものは[`ParseError::RelativeUrlWithoutBase`](https://docs.rs/url/2.2.0/url/enum.ParseError.html)が返ってきます。
 
 ```
 Err(RelativeUrlWithoutBase)
@@ -142,16 +139,13 @@ URLをパースした結果に応じて以下の通りに処理を分けまし�
         }
 ```
 
-相対URLを絶対URLに変換するのに[`join`メソッド](https://docs.rs/url/2.2.0/url/struct.Url.html#method.join)が使えます。
-`join`メソッドは`self`をベースURLとして`input`を結合したURLを返します。
-ここでベースURLとして最初に`reqwest::blocking::get`に渡したURLを使いたくなりますが、リダイレクトが発生する可能性に注意しなければなりません。
-リダイレクト後のURLは`reqwest`クレートの[`Response`構造体の`url`メソッド](https://docs.rs/reqwest/0.10.9/reqwest/blocking/struct.Response.html#method.url)で取得することができます。
+相対URLを絶対URLに変換するのに[`join`](https://docs.rs/url/2.2.0/url/struct.Url.html#method.join)メソッドが使えます。`join`メソッドは`self`をベースURLとして`input`を結合したURLを返します。
 
-まずはレスポンスからリダイレクト後のURLを取り出すコードを書きます。
-レスポンスのボディを取り出す[`text`メソッド](https://docs.rs/reqwest/0.10.9/reqwest/blocking/struct.Response.html#method.text)が`Response`オブジェクトを消費してしまうことに注意します。
-ボディを取り出す前にURLを取り出してクローンしておきましょう。
+ここでベースURLとして最初に`reqwest::blocking::get`に渡したURLを使いたくなりますが、リダイレクトが発生する可能性に注意しなければなりません。リダイレクト後のURLは`reqwest`クレートの`Response`構造体の[`url`](https://docs.rs/reqwest/0.10.9/reqwest/blocking/struct.Response.html#method.url)メソッドで取得することができます。
 
-```rust
+まずはレスポンスからリダイレクト後のURLを取り出すコードを書きます。レスポンスのボディを取り出す[`text`](https://docs.rs/reqwest/0.10.9/reqwest/blocking/struct.Response.html#method.text)メソッドが`Response`オブジェクトを消費してしまうことに注意します。ボディを取り出す前にURLを取り出してクローンしておきましょう。
+
+```rust:src/main.rs
     let response = reqwest::blocking::get("https://www.rust-lang.org")?;
     let base_url = response.url().clone();
     let body = response.text()?;
@@ -160,7 +154,7 @@ URLをパースした結果に応じて以下の通りに処理を分けまし�
 
 `<a>`要素を走査するループの中では相対URLをベースURLに`join`して表示します。
 
-```rust
+```rust:src/main.rs
     for href in doc.find(Name("a")).filter_map(|a| a.attr("href")) {
         match Url::parse(href) {
             Ok(url) => { println!("{}", url); },
@@ -173,4 +167,24 @@ URLをパースした結果に応じて以下の通りに処理を分けまし�
     }
 ```
 
-これで取得したウェブページから抽出したリンクを絶対URLで表示できるようになりました。
+これで取得したウェブページから抽出したリンクを絶対URLで表示できるようになりました。`cargo run`を実行すると以下のような表示がされるはずです。
+
+```
+https://www.rust-lang.org/
+https://www.rust-lang.org/tools/install
+https://www.rust-lang.org/learn
+https://play.rust-lang.org/
+https://www.rust-lang.org/tools
+https://www.rust-lang.org/governance
+https://www.rust-lang.org/community
+https://blog.rust-lang.org/
+https://www.rust-lang.org/learn/get-started
+https://blog.rust-lang.org/2020/11/19/Rust-1.48.html
+https://blog.rust-lang.org/2018/03/12/roadmap.html
+--snip--
+```
+
+## この章で作成したファイル
+
+- [`Cargo.toml`](https://github.com/ShotaroTsuji/mini-crawler/blob/v0.3.0/Cargo.toml)
+- [`src/main.rs`](https://github.com/ShotaroTsuji/mini-crawler/blob/v0.3.0/src/main.rs)
