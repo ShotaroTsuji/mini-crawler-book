@@ -45,8 +45,8 @@ fn main() -> eyre::Result<()> {
 
 ## この章で作成したファイル
 
-- [`Cargo.toml`](https://github.com/ShotaroTsuji/mini-crawler/blob/ch02/Cargo.toml)
-- [`src/main.rs`](https://github.com/ShotaroTsuji/mini-crawler/blob/ch02/src/main.rs)
+- [`Cargo.toml`](https://github.com/ShotaroTsuji/mini-crawler/blob/v0.2.0/Cargo.toml)
+- [`src/main.rs`](https://github.com/ShotaroTsuji/mini-crawler/blob/v0.2.0/src/main.rs)
 
 ## 演習
 
