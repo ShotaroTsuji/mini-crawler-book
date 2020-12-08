@@ -18,7 +18,7 @@ eyre = "0.6"
 
 [`reqwest::blocking`](https://docs.rs/reqwest/0.10.8/reqwest/blocking/index.html)モジュールのサンプルコードを`main`関数の中に貼り付けて、プログラムが動作するようにコードを書き足したものが以下のソースコードになります。`main`関数の戻り値を`Result`型にすることで`?`演算子を使ってエラーを返すことができるようになります。`std::result::Result<T, E>`を使うと`E`に適切な型を入れる必要があるので、ここでは簡単に済ませるために[`eyre::Result<T>`](https://docs.rs/eyre/0.6.3/eyre/type.Result.html)を使いました。
 
-```rust
+```rust:src/main.rs
 fn main() -> eyre::Result<()> {
     let body = reqwest::blocking::get("https://www.rust-lang.org")?
         .text()?;

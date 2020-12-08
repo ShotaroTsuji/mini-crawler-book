@@ -55,7 +55,6 @@ fn main() -> eyre::Result<()> {
 
 ```
 % RUST_LOG=info cargo run -- https://bit.ly/2J6BnlL
-   Compiling mini-crawler v0.1.0 (/Users/shotaro/projects/mini-crawler)
     Finished dev [unoptimized + debuginfo] target(s) in 3.04s
      Running `target/debug/mini-crawler 'https://bit.ly/2J6BnlL'`
 [2020-11-24T01:44:06Z INFO  mini_crawler] GET "https://bit.ly/2J6BnlL"
@@ -192,7 +191,6 @@ pub enum GetLinksError {
 
 ```
 % RUST_LOG=info cargo run -- https://example.com/xxx
-   Compiling mini-crawler v0.1.0 (/Users/shotaro/projects/mini-crawler)
     Finished dev [unoptimized + debuginfo] target(s) in 3.07s
      Running `target/debug/mini-crawler 'https://example.com/xxx'`
 [2020-11-24T10:49:56Z INFO  mini_crawler] GET "https://example.com/xxx"

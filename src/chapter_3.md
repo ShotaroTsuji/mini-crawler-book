@@ -64,7 +64,7 @@ Element { name: "a", attrs: [("href", "/tools")], children: [Text("Tools")] }
 
 最後に`a`要素から`href`属性を取り出すことで、リンクのURLを得ることができます。[`Node`](https://docs.rs/select/0.5.0/select/node/struct.Node.html)構造体には`attr`というメソッドがあります。
 
-```
+```rust
 pub fn attr(&self, name: &str) -> Option<&'a str>
 ```
 
@@ -128,7 +128,7 @@ URLをパースした結果に応じて以下の通りに処理を分けまし�
 
 `for`文の中には次のような`match`文を書くことになります。
 
-```
+```rust:src/main.rs
 	use url::ParseError as UrlParseError;
         match Url::parse(href) {
             Ok(url) => { println!("{}", url); },
